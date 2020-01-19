@@ -1,6 +1,8 @@
 import numpy as np
 import cv2
 import paho.mqtt.client as mqtt
+import time
+
 
 # start MQTT client ================================================================================
 LOCAL_MQTT_HOST="mqtt_broker"
@@ -29,25 +31,33 @@ local_mqttclient.on_message = on_message
 # 1 should correspond to /dev/video1 , your USB camera. The 0 is reserved for the TX2 onboard camera
 face_cascade = cv2.CascadeClassifier('/home/haarcascade_frontalface_default.xml')
 cap = cv2.VideoCapture(1)
+
+i = 0
 while(True):
-    # Capture frame-by-frame
-    ret, frame = cap.read()
+  i += 1
+  print(i)
+  
+  local_mqttclient.publish(LOCAL_MQTT_TOPIC, payload = i, qos = 0, retain = False)
+  time.sleep(10)
 
-    # We don't use the color information, so might as well save space
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    # face detection and other logic goes here
-    faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-    for (x,y,w,h) in faces:
-        # your logic goes here; for instance
-        
-        # cut out face from the frame.. 
-        face = cv2.rectangle(gray,(x,y),(x+w,y+h),(255,0,0),2)
-        
-        # we can save the png just to see if it worked: cv2.imwrite('/home/test.png', face)
-        
-        # encode the image
-        rc,png = cv2.imencode('.png', face)
-        msg = png.tobytes()
+  # # Capture frame-by-frame
+  # ret, frame = cap.read()
 
-        # send it to broker
-        local_mqttclient.publish(LOCAL_MQTT_TOPIC, payload = msg, qos = 0, retain = False)
+  # # We don't use the color information, so might as well save space
+  # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+  # # face detection and other logic goes here
+  # faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+  # for (x,y,w,h) in faces:
+  #     # your logic goes here; for instance
+      
+  #     # cut out face from the frame.. 
+  #     face = cv2.rectangle(gray,(x,y),(x+w,y+h),(255,0,0),2)
+      
+  #     # we can save the png just to see if it worked: cv2.imwrite('/home/test.png', face)
+      
+  #     # encode the image
+  #     rc,png = cv2.imencode('.png', face)
+  #     msg = png.tobytes()
+
+  #     # send it to broker
+  #     local_mqttclient.publish(LOCAL_MQTT_TOPIC, payload = msg, qos = 0, retain = False)
