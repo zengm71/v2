@@ -35,35 +35,31 @@ face_cascade = cv2.CascadeClassifier('/home/haarcascade_frontalface_default.xml'
 cap = cv2.VideoCapture(1)
 
 i = 0
-while(True):
-  # this is just testing dummy messages to see if the channel is up and working
-  # i += 1
-  # print(i)
-  # local_mqttclient.publish(LOCAL_MQTT_TOPIC, payload = i, qos = 0, retain = False)
-  # time.sleep(10)
+ret, frame = cap.read()
 
-  # Capture frame-by-frame
-  ret, frame = cap.read()
+# We don't use the color information, so might as well save space
+gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+cv2.imwrite('/home/debug.png', gray)
+# face detection and other logic goes here
+faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+print(len(faces))
 
-  # We don't use the color information, so might as well save space
-  gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-  # face detection and other logic goes here
-  faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-  for (x,y,w,h) in faces:
-      # your logic goes here; for instance
-      
-      # cut out face from the frame.. 
-      face = cv2.rectangle(gray,(x,y),(x+w,y+h),(255,0,0),2)
-      
-      # we can save the png just to see if it worked: cv2.imwrite('/home/test.png', face)
-      
-      # encode the image
-      rc,png = cv2.imencode('.png', face)
-      msg = png.tobytes()
+(x,y,w,h) = faces[0]
+    # your logic goes here; for instance
+    
+# cut out face from the frame.. 
+face = cv2.rectangle(gray,(x,y),(x+w,y+h),(255,0,0),2)
+cv2.imwrite('/home/debug.png', face)
+# we can save the png just to see if it worked: cv2.imwrite('/home/test.png', face)
 
-      # send it to broker
-      local_mqttclient.publish(LOCAL_MQTT_TOPIC, payload = msg, qos = 0, retain = False)
-      # let's try keep track of faces detec
-      i += 1
-      print(i)
-      time.sleep(10)
+# encode the image
+rc,png = cv2.imencode('.png', face)
+msg = png.tobytes()
+
+# png_new = np.frombuffer(msg, np.uint8)
+# png_new = np.reshape(png_new, newshape = (png_new.size, 1))
+# png_new = cv2.imdecode(png_new, cv2.IMREAD_COLOR)
+
+png_new = cv2.imdecode(np.fromstring(msg, dtype=np.uint8),cv2.IMREAD_COLOR)
+cv2.imwrite('/home/debug_new.png', png_new)
+

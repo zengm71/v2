@@ -17,6 +17,8 @@
 
 3. MQTT forwarder
 
+    This spins up the forwarder that connects with both broker, so make sure the broker is up on VSI as well (see below).
+
     * Build the image
 
         `sudo docker build -t mqtt_forwarder -f dockerfile_tx2_mqtt_forwarder .`
