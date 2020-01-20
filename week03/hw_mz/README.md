@@ -60,4 +60,4 @@
 
     * Spin up container and run `vsi_receiver.py`
 
-        `sudo docker run --rm --name mqtt_receiver --network hw03 -v ~/W251/HW/hw03/:/home/ -ti mqtt_receiver /bin/bash /home/vsi_run_receiver.sh`
+        `sudo docker run --rm --name mqtt_receiver --network hw03 -v ~/W251/HW/hw03/:/home/ -v ~/.s3cfg:/root/.s3cfg -ti mqtt_receiver /bin/bash /home/vsi_run_receiver.sh`

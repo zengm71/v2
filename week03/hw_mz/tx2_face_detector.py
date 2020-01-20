@@ -62,8 +62,9 @@ while(True):
       msg = png.tobytes()
 
       # send it to broker
-      local_mqttclient.publish(LOCAL_MQTT_TOPIC, payload = msg, qos = 0, retain = False)
+      local_mqttclient.publish(LOCAL_MQTT_TOPIC, payload = str(i) + msg, qos = 0, retain = False)
       # let's try keep track of faces detec
       i += 1
+      if (i == 10): i = 0
       print(i)
       time.sleep(10)
